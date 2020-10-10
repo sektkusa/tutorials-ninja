@@ -1,9 +1,14 @@
 package orderphone;
 
 import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import cucumber.api.java.en.Given;
@@ -131,22 +136,21 @@ public class StepDef {
 		po.click_add_to_cart.click();
 		Thread.sleep(2000);
 
-
 	}
 
 	@When("^click add to cart and check out$")
 	public void click_add_to_cart_and_check_out() throws Throwable {
-		//po.top_check_out.click();
-		
-		 po.click_cart_icon.click(); 
-		 po.click_checkout.click();
-		 
-}	 
-		
+		// po.top_check_out.click();
+
+		po.click_cart_icon.click();
+		po.click_checkout.click();
+
+	}
+
 	@When("^enter your billing details like f_name, l_name, Address, City, Postcode, country, region/state as \"([^\"]*)\", \"([^\"]*)\", \"([^\"]*)\", \"([^\"]*)\", \"([^\"]*)\", \"([^\"]*)\", \"([^\"]*)\"$")
 	public void enter_your_billing_details_like_f_name_l_name_Address_City_Postcode_country_region_state_as(
 			String f_name, String l_name, String Address, String City, String Postcode, String country, String region)
-		throws Throwable {
+			throws Throwable {
 		po.always_enter_new_address.click();
 		f_name = "amudha";
 		l_name = "p";
@@ -169,27 +173,29 @@ public class StepDef {
 
 	@When("^enter your delivery details and click continue$")
 	public void enter_your_delivery_details_and_click_continue() throws Throwable {
-		Thread.sleep(2000);
+		WebDriverWait wait1 = new WebDriverWait(driver, 10);
+		po.click_Address_payment_button = wait1
+				.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\'button-shipping-address\']")));
+
 		po.click_Address_payment_button.click();
 	}
 
 	@When("^enter your delivery method and click continue$")
 	public void enter_your_delivery_method_and_click_continue() throws Throwable {
-		if(DriverWaits.waitForPageLoadComplete(driver)) {
-		po.always_existing_delivery_address.click();
+		WebDriverWait wait1 = new WebDriverWait(driver, 10);
+		po.delivery_contd = wait1
+				.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\'button-shipping-method\']")));
 		po.delivery_contd.click();
-		}
-		
-
 	}
 
 	@When("^enter your payment method and click continue$")
 	public void enter_your_payment_method_and_click_continue() throws Throwable {
-		if(DriverWaits.waitForPageLoadComplete(driver)){
-		po.delivery_method_contd.click();
+
+		WebDriverWait wait1 = new WebDriverWait(driver, 10);
+po.click_billing_agree_policy=wait1.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\'collapse-payment-method\']/div/div[2]/div/input[1]")));
 		po.click_billing_agree_policy.click();
 		po.click_payment_contd.click();
-		}
+
 	}
 
 	@Then("^confirm your order$")
