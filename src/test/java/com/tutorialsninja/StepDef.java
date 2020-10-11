@@ -1,5 +1,8 @@
-package orderphone;
+package com.tutorialsninja;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -11,18 +14,28 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
+import cucumber.api.DataTable;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class StepDef {
-
-	WebDriver driver = new ChromeDriver();
-	Pageobjects po = new Pageobjects(driver);
+	
+	private WebDriver driver = null;
+	private Pageobjects po = null;
+	private String bodyText = null;
+	
+	public StepDef() {
+		System.out.println(" Path :: " + System.getProperty("user.home"));
+		System.setProperty("webdriver.chrome.driver", System.getProperty("user.home") + "/chromedriver");
+		driver = new ChromeDriver();
+		po = new Pageobjects(driver);
+	}
 
 	@Given("^navigate to ninja tutorials page$")
 	public void navigate_to_ninja_tutorials_page() {
-		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "\\chromedriver.exe");
+		//System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "\\chromedriver.exe");
 		driver.navigate().to("http://tutorialsninja.com/demo/");
 		driver.manage().timeouts().implicitlyWait(5000L, TimeUnit.MILLISECONDS);
 		driver.manage().window().maximize();
@@ -33,6 +46,40 @@ public class StepDef {
 		po.myaccount.click();
 		po.register.click();
 
+	}
+	
+	@And("^I enter all required input and click continue$")
+	public void i_enter_all_required_input_and_click_continue(DataTable dt) throws Throwable {
+	   List<Map<String, String>> signUpForms = dt.asMaps(String.class, String.class);
+	   String currentTimeInMillis = String.valueOf(System.currentTimeMillis());
+	   
+	   for(Map<String, String> signUpForm : signUpForms) {
+		   po.firstname.sendKeys(signUpForm.get("firstname"));
+		   po.lastname.sendKeys(signUpForm.get("lastname"));
+		   po.email.sendKeys(currentTimeInMillis + "_" + signUpForm.get("email"));
+		   po.telephone.sendKeys(signUpForm.get("telephone"));
+		   po.password.sendKeys(signUpForm.get("password"));
+		   po.confirm_password.sendKeys(signUpForm.get("confirmpassword"));
+		   po.check_policy.click();
+		   po.continue_button.click();
+		   bodyText = driver.findElement(By.tagName("body")).getText();
+		   boolean neededLogout = Boolean.valueOf(signUpForm.get("logout"));
+		   System.out.println("NeededLogout :: " + neededLogout);
+		   if(neededLogout) {
+			   po.logout_link.click();
+			   po.myaccount.click();
+			   po.register.click();
+		   }
+	   }
+	}
+	
+	
+	@Then("^get the response$")	
+	public void get_the_response(DataTable dataTable) throws Throwable {
+		List<String> actual = dataTable.asList(String.class);
+		Assert.assertTrue(bodyText.contains(actual.get(0)));
+		Thread.sleep(1000);
+		driver.quit();
 	}
 
 	@When("^I enter First name as \"([^\"]*)\"$")
@@ -47,26 +94,26 @@ public class StepDef {
 		po.lastname.sendKeys(last_name);
 	}
 
-	@When("^I enter Email as\"([^\"]*)\"$")
+	@When("^I enter Email as \"([^\"]*)\"$")
 	public void i_enter_Email_as(String Email) throws Throwable {
 		Email = System.currentTimeMillis() + "_test@gmail.com";
 		po.email.sendKeys(Email);
 	}
 
-	@When("^i enter telephone as\"([^\"]*)\"$")
+	@When("^I enter telephone as \"([^\"]*)\"$")
 	public void i_enter_telephone_as(String telephone) throws Throwable {
 		telephone = "9962083032";
 		po.telephone.sendKeys(telephone);
 	}
 
-	@When("^i enter password as\"([^\"]*)\"$")
+	@When("^I enter password as \"([^\"]*)\"$")
 	public void i_enter_password_as(String pwd) throws Throwable {
 		pwd = "amu@3398";
 		po.password.sendKeys(pwd);
 
 	}
 
-	@When("^I enter password confirm as\"([^\"]*)\"$")
+	@When("^I enter password confirm as \"([^\"]*)\"$")
 	public void i_enter_password_confirm_as(String confirm_pwd) throws Throwable {
 		confirm_pwd = "amu@3398";
 		po.confirm_password.sendKeys(confirm_pwd);
@@ -96,10 +143,12 @@ public class StepDef {
 		Thread.sleep(1000);
 		driver.quit();
 	}
+	
+	
 
 	@Given("^navigate to tutorialsninja login page$")
 	public void navigate_to_tutorialsninja_login_page() throws Throwable {
-		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "\\chromedriver.exe");
+		//System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "\\chromedriver.exe");
 		driver.navigate().to("http://tutorialsninja.com/demo/index.php?route=account/account");
 		driver.manage().timeouts().implicitlyWait(5000L, TimeUnit.MILLISECONDS);
 		driver.manage().window().maximize();

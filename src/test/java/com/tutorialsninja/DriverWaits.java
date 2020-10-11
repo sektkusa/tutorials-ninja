@@ -1,4 +1,4 @@
-package orderphone;
+package com.tutorialsninja;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;

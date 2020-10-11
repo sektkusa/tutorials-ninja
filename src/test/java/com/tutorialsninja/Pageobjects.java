@@ -1,4 +1,4 @@
-package orderphone;
+package com.tutorialsninja;
 
 
 	import org.openqa.selenium.WebDriver;
@@ -144,7 +144,7 @@ package orderphone;
 
 	public Pageobjects(WebDriver driver) {
 		PageFactory.initElements(driver, this);
-
+	
 	}
 
 	}
