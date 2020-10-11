@@ -1,4 +1,4 @@
-@mytest
+
 Feature: 
 
   Scenario: register store for valid input
